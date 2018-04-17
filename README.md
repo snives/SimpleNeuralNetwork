@@ -2,6 +2,26 @@
 Simple artificial neural network implemented in C#
 
 ## Summary
+Setting up the simple neural network is very straightforward.  Define your model by setting the network layers and number of neurons in each layer.  Set your hyperparameters for learning and L2 regularization.
+``` 
+int[] layers = new[] { 2, 2, 1 };
+var nn = new NeuralNetwork(layers)
+{
+    Iterations = 1000,              //training iterations
+    Alpha = 3.5,                    //learning rate, lower is slower, too high may not converge.
+    L2_Regularization = true,       //set L2 regularization to prevent overfitting
+    Lambda = 0.0003,                //strength of L2
+    Rnd = new Random(12345)         //provide a seed for repeatable outputs
+};
+```
+Train the network on your training data and labels.
+```
+nn.Train(input, y);
+```
+Perform some predictions based on yet unseen inputs.
+```
+var output = nn.Predict(input);
+```
 
 
 ## Background
@@ -29,6 +49,37 @@ The choice of activation function is usually a parameter of the model, discussed
 </p>
 
 where sigma is the activation function, i is the index of each input, x is the input, w is the weight of the connection, and b is the bias.
+
+## Network of Neurons
+The power of neural networks can be seen when we link neuronal units together, sometimes called nodes or units, into a multi-layer neural network (historically referred to as a multi-layer perceptron.)
+
+Our multidimensional input vector X, in figure 2. it shows a 5 dimensional input, 3 dimensional hidden layer, and 1 dimensional output.  It contains a full-mesh network between the input and hidden layer neurons, which are modeled by a weight matrix.  Given N inputs and M hidden layers, you will have an NxM number of weights.  The same is true for the hidden layer to the output layer, in this case a 3x1 matrix.  Networks may have a different number of neurons in each layer, and/or a different number of layers.  This is a free parameter of your model and suitable values will need to be found.
+
+<p align="center">
+  <img src="https://i.stack.imgur.com/9jzpy.jpg"/><br>
+  figure 2.
+</p>
+
+In a trained three layer network, we can get the output from the network by placing our inputs in layer 1, computing the outputs for each neuron in the hidden layer, then using those outputs as inputs to compute the outputs for each neuron in the output layer.  This is called feeding forward, because the output of the previous layer feeds into the input of the next.
+
+
+
+To train the network we have to use gradient descent to find the proper weights and biases which minimize some error or cost function.  Typically we use the mean squared error (MSE) as a cost function, or rather a modified form of it to make the differentiation simple as we will see later on, where O is the output and Y is the target.
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?MSE&space;=&space;\frac{1}{2}&space;\left&space;\|&space;O-Y&space;\right&space;\|^{2}" title="MSE = \frac{1}{2} \left \| O-Y \right \|^{2}" /><br>
+differentiating, we have<br><br>
+<img src="https://latex.codecogs.com/gif.latex?{MSE}'&space;=&space;\left&space;\|&space;O-Y&space;\right&space;\|" title="{MSE}' = \left \| O-Y \right \|" />
+</p>
+
+Now that we know how much error the network produced, we want to attribute that error to the neurons which contributed the most to the error, and change those output neurons weights and bias by some amount so the next time it calculates the precise output with zero error.  But that neurons output is also dependent upon the the inputs, which are outputs from the previous layer, and so those weights and biases need to be updated too by some amount of error which was attributed to this individual neuron.  This will happen for as many layers until we reach the input layer.  The process of propagating the error backwards through the network is called back propagation.
+
+## Back Propagation
+
+
+## Future research
+Keeping in mind that each neuron is basically a linear function <img src="https://latex.codecogs.com/gif.latex?y&space;=&space;\sigma&space;(wx&space;&plus;&space;b)" title="y = \sigma (wx + b)" /> it makes sense that each neuron is only capable of solving linear separable problems.  A future area I will investigate is to provide inputs which have passed through a non-linear function.  This should improve the accuracy of traditional ANNs on difficult to learn problems.  This could even manifest as a layer of kernel functions creating a deep neural network.
+
+## 
 
 
 
@@ -66,17 +117,6 @@ The rectified linear unit is also a non-linear function however it is very simpl
 <img src="https://latex.codecogs.com/gif.latex?\sigma&space;(x)&space;=&space;\max\left(0,x\right)" title="\sigma (x) = \max\left(0,x\right)" />
 
 <img src="https://github.com/snives/SimpleNeuralNetwork/blob/master/Docs/desmos-graph-ReLU.png?raw=true" height="100px" style="border: 1px solid #ccc;margin-left:20px;"/>
-
-
-## Network of Neurons
-The power of neural networks can be seen when we link neuronal units together, sometimes called nodes or units, into a multi-layer neural network (historically referred to as a multi-layer perceptron.)
-
-Our multidimensional input vector X, in this diagram is 5 dimensional.  And it contains a full-mesh network with the hidden layer neurons, which are modeled by our weights.  Given N inputs and M hidden layers, you will have an NxM number of weights.  The same is true for the hidden layer to the output layer.  Networks may have a different number of neurons in each layer, and/or a different number of layers.  This is a free parameter of your model and suitable values will need to be found.
-
-<p align="center">
-  <img src="https://i.stack.imgur.com/9jzpy.jpg"/><br>
-  figure 2.
-</p>
 
 # Further Resources
 Choosing initial weights<br>
