@@ -64,16 +64,36 @@ In a trained three layer network, we can get the output from the network by plac
 
 
 
-To train the network we have to use gradient descent to find the proper weights and biases which minimize some error or cost function.  Typically we use the mean squared error (MSE) as a cost function, or rather a modified form of it to make the differentiation simple as we will see later on, where O is the output and Y is the target.
+To train the network we iterate over all training data, computing the output using feed forward and then measuring its accuracy according to a metric, called a  cost function.  We then use the error and push a certain amount backwards through the network to adjust the weights and biases so that next time it will produce a more accurate result, this is called back propagation.
+## Back Propagation
+Training a neural network is very similar to logistic regression in that we are essentially using gradient descent to find the proper weights and biases in each neuron which minimize some cost function.  Typically we use the mean squared error as a cost function C (or rather a slightly modified form to make the differentiation simple as we will see later on) where a is the output and y is the training value.  The superscript L denotes this is calculated from the last layer of the network, the output layer.
 <p align="center">
-<img src="https://latex.codecogs.com/gif.latex?MSE&space;=&space;\frac{1}{2}&space;\left&space;\|&space;O-Y&space;\right&space;\|^{2}" title="MSE = \frac{1}{2} \left \| O-Y \right \|^{2}" /><br>
+<img src="https://latex.codecogs.com/gif.latex?C&space;=&space;\frac{1}{2}&space;\|a^l-y\|^2&space;=&space;\frac{1}{2}&space;\sum_j&space;(a^l_j-y_j)^2" title="C = \frac{1}{2} \|a^l-y\|^2 = \frac{1}{2} \sum_j (a^l_j-y_j)^2" /><br>
 differentiating, we have<br><br>
-<img src="https://latex.codecogs.com/gif.latex?{MSE}'&space;=&space;\left&space;\|&space;O-Y&space;\right&space;\|" title="{MSE}' = \left \| O-Y \right \|" />
+<img src="https://latex.codecogs.com/gif.latex?{C}' = y_j-a^l_j" title="{C}' = \left \| y_j-a^l_j \right \|" />
 </p>
 
-Now that we know how much error the network produced, we want to attribute that error to the neurons which contributed the most to the error, and change those output neurons weights and bias by some amount so the next time it calculates the precise output with zero error.  But that neurons output is also dependent upon the the inputs, which are outputs from the previous layer, and so those weights and biases need to be updated too by some amount of error which was attributed to this individual neuron.  This will happen for as many layers until we reach the input layer.  The process of propagating the error backwards through the network is called back propagation.
 
-## Back Propagation
+Now that we know how much error the network produced, we want to attribute that error to the neurons which contributed the most to the error, and change those output neurons weights and bias by some amount so the next time it calculates the precise output with zero error.  This boils down to computing the partial derivatives <img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;C&space;}{\partial&space;w}" title="\frac{\partial C }{\partial w}" /> and <img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;C&space;}{\partial&space;b}" title="\frac{\partial C }{\partial b}" /> of the cost function C with respect to each neurons weight w and bias b in the network.  This depends upon the error that we attribute to each neuron in the network, which we will call <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" />, where l is the layer, and j is the neuron in that layer. 
+
+First we will define <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> with regard to each neuron in the output layer. 
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j&space;=&space;\frac{\partial C}{\partial&space;a^l_j}\sigma'(z^l_j)" title="\delta ^l_j = \frac{\partial }{\partial a^l_j}\sigma'(z^l_j)" />
+</p>
+
+The partial derivative of the cost function C with respect to the output of the jth neuron of the output layer l is the derivative of the cost function. 
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;C}{\partial&space;a^l_j}&space;=&space;C'" title="\frac{\partial C}{\partial a^l_j} = C'" />
+</p>
+
+z^l_j is the weighted input that we pass to the activation function sigma.  This is something that we have already calculated in the feed forward phase of each neuron, so its advantageous to store this intermediate value then, seeing that we can reuse that value here during back propagation
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?z^l_j=\sum_{i}(x_iw_i_j)&space;&plus;&space;b" title="z^l_j=\sum_{i}(x_iw_i_j) + b" />
+</p>
+
+This is how we find the error attributable to each of the output neurons.  But we need to push this error through each neuron in the previous layers.  To do this we need to define <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> in terms of the error in the forward layer <img src="https://latex.codecogs.com/gif.latex?\delta&space;^{l+1}_j" title="\delta ^l+1_j" />.
+
+
 
 
 ## Future research
