@@ -70,7 +70,7 @@ Training a neural network is very similar to logistic regression in that we are 
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?C&space;=&space;\frac{1}{2}&space;\|a^l-y\|^2&space;=&space;\frac{1}{2}&space;\sum_j&space;(a^l_j-y_j)^2" title="C = \frac{1}{2} \|a^l-y\|^2 = \frac{1}{2} \sum_j (a^l_j-y_j)^2" /><br>
 differentiating, we have<br><br>
-<img src="https://latex.codecogs.com/gif.latex?{C}' = y_j-a^l_j" title="{C}' = \left \| y_j-a^l_j \right \|" />
+<img src="https://latex.codecogs.com/gif.latex?C'&space;=&space;y_j&space;-&space;a^l_j" title="C' = y_j - a^l_j" />
 </p>
 
 
@@ -78,7 +78,7 @@ Now that we know how much error the network produced, we want to attribute that 
 
 First we will define <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> with regard to each neuron in the output layer. 
 <p align="center">
-<img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j&space;=&space;\frac{\partial C}{\partial&space;a^l_j}\sigma'(z^l_j)" title="\delta ^l_j = \frac{\partial }{\partial a^l_j}\sigma'(z^l_j)" />
+<img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j&space;=&space;\frac{\partial&space;C}{\partial&space;a^l_j}\sigma'(z^l_j)" title="\delta ^l_j = \frac{\partial C}{\partial a^l_j}\sigma'(z^l_j)" />
 </p>
 
 The partial derivative of the cost function C with respect to the output of the jth neuron of the output layer l is the derivative of the cost function. 
@@ -93,7 +93,24 @@ z^l_j is the weighted input that we pass to the activation function sigma.  This
 
 This is how we find the error attributable to each of the output neurons.  But we need to push this error through each neuron in the previous layers.  To do this we need to define <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> in terms of the error in the forward layer <img src="https://latex.codecogs.com/gif.latex?\delta&space;^{l+1}_j" title="\delta ^l+1_j" />.
 
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j&space;=&space;\sum_{k}&space;(w_j_k&space;\delta&space;^{l&plus;1}_k)&space;\sigma'(z^l_j)" title="\delta ^l_j = \sum_{k} (w_j_k \delta ^{l+1}_k) \sigma'(z^l_j)" />
+</p>
 
+So this describes how the error at any hidden layer neuron <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> is the sum of the weighted errors in the layer it feeds into times the derivative of the activation function sigma of the weighted values and bias feeding into this neuron.
+
+Now that we know the error  <img src="https://latex.codecogs.com/gif.latex?\delta&space;^l_j" title="\delta ^l_j" /> at each neuron we can define the rate of change with regard to the weight.
+
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;C}{\partial&space;w^l_j_k}&space;=&space;a^{l-1}_j&space;\delta&space;^l_j" title="\frac{\partial C}{\partial w^l_j_k} = a^{l-1}_j \delta ^l_j" /><br>
+</p>
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;C}{\partial&space;b^l_j}&space;=&space;\delta&space;^l_j" title="\frac{\partial C}{\partial b^l_j} = \delta ^l_j" />
+</p>
+
+
+We then are able to update the current weight by some step size alpha times the rate of change in order to arrive at a value that will produce a lower cost.  This alpha is called the learning rate, and just as with stochastic gradient descent an alpha setting too small will converge slowly and an alpha too large may not converge at all. 
+This concludes one pass of backpropagation.
 
 
 ## Future research
